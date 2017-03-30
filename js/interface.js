@@ -1,8 +1,8 @@
 var data = Fliplet.Widget.getData() || {
-  show_data_legend: true,
-  show_data_values: true,
-  show_total_entries: '',
-  auto_refresh: ''
+  showDataLegend: true,
+  showDataValues: true,
+  showTotalEntries: '',
+  autoRefresh: ''
 };
 
 var $dataSource = $('select#select-data-source');
@@ -17,10 +17,10 @@ Fliplet.Widget.onSaveRequest(function () {
   Fliplet.Widget.save({
     dataSourceId: parseInt($dataSource.val(), 10),
     dataSourceColumn: $dataColumns.val(),
-    show_data_legend: $('#show_data_legend:checked').val() === "show",
-    show_data_values: $('#show_data_values:checked').val() === "show",
-    show_total_entries: $('#show_total_entries:checked').val() === "show",
-    auto_refresh: $('#auto_refresh:checked').val() === "refresh"
+    showDataLegend: $('#show_data_legend:checked').val() === "show",
+    showDataValues: $('#show_data_values:checked').val() === "show",
+    showTotalEntries: $('#show_total_entries:checked').val() === "show",
+    autoRefresh: $('#auto_refresh:checked').val() === "refresh"
   }).then(function () {
     Fliplet.Widget.complete();
   });
@@ -51,10 +51,10 @@ Fliplet.DataSources.get({
 
 // LOAD CHART SETTINGS
 if (data) {
-  $('#show_data_legend').prop('checked', data.show_data_legend);
-  $('#show_data_values').prop('checked', data.show_data_values);
-  $('#show_total_entries').prop('checked', data.show_total_entries);
-  $('#auto_refresh').prop('checked', data.auto_refresh);
+  $('#show_data_legend').prop('checked', data.showDataLegend);
+  $('#show_data_values').prop('checked', data.showDataValues);
+  $('#show_total_entries').prop('checked', data.showTotalEntries);
+  $('#auto_refresh').prop('checked', data.autoRefresh);
 }
 
 
