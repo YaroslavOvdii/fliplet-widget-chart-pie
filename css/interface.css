@@ -5,3 +5,8 @@ body {
 .widget-holder {
     padding: 15px;
 }
+
+.fl-widget-provider {
+  width: 100%;
+  border: none;
+}
