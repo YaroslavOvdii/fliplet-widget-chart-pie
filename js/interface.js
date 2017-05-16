@@ -16,12 +16,12 @@ var dsQueryData = {
         filters: false,
         columns: [
           {
-            key: 'categories',
+            key: 'category',
             label: 'Select the column with the categories',
             type: 'single'
           },
           {
-            key: 'values',
+            key: 'value',
             label: 'Select the column with the values',
             type: 'single'
           }
@@ -44,20 +44,13 @@ var dsQueryData = {
 }
 
 var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
-  selector: ".data-source-query",
-  data: dsQueryData,
-  onEvent: function(event, data){
-    if (event === 'mode-changed') {
-      console.log('mode index', data.value)
-    }
-
-    return true;
-  }
+  selector: '.data-source-query',
+  data: dsQueryData
 });
 
 dsQueryProvider.then(function(result){
   Fliplet.Widget.save({
-    dataSourceQuery: result,
+    dataSourceQuery: result.data,
     showDataLegend: $('#show_data_legend:checked').val() === "show",
     showDataValues: $('#show_data_values:checked').val() === "show",
     showTotalEntries: $('#show_total_entries:checked').val() === "show",
