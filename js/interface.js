@@ -13,6 +13,7 @@ var dsQueryData = {
     modes: [
       {
         label: 'Plot my data as it is',
+        filters: false,
         columns: [
           {
             key: 'category',
@@ -28,6 +29,7 @@ var dsQueryData = {
       },
       {
         label: 'Summarise my data',
+        filters: false,
         columns: [
           {
             key: 'column',
