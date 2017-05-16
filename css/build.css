@@ -1,15 +1,15 @@
 .highcharts-credits {
-    display: none;
+  display: none;
 }
 .highcharts-axis-line {
-    stroke: #6c9f1f;
+  stroke: #6c9f1f;
 }
 .chart-pie-updatedAt,
 .chart-pie-total {
-    text-align: center;
-    color: #c2c2c2;
+  text-align: center;
+  color: #c2c2c2;
 }
 .chart-pie-updatedAt > .updatedAt,
 .chart-pie-total > .total {
-    color: #888888;
+  color: #888888;
 }

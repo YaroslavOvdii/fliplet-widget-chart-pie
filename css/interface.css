@@ -14,4 +14,5 @@ body {
 
 .data-source-query {
   min-height: 24px;
+  margin-bottom: 0;
 }
