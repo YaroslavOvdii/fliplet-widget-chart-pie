@@ -100,6 +100,16 @@ function init(){
       }
 
       function drawChart() {
+        var colors = [
+          '#337AB7', '#5BC0DE', '#5CB85C', '#F0AD4E', '#C9302C',
+          '#293954', '#2E6F82', '#3D7A3D', '#B07623', '#963732'
+        ];
+        colors.forEach(function eachColor (color, index) {
+          if (!Fliplet.Themes.Current) {
+            return;
+          }
+          colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
+        });
         var chartOpt = {
           chart: {
             type: 'pie',
@@ -107,6 +117,9 @@ function init(){
             plotBorderWidth: null,
             plotShadow: false,
             renderTo: $container.find('.chart-pie-container')[0],
+            style: {
+              fontFamily: Fliplet.Themes.Current.get('bodyFontFamily') || 'sans-serif'
+            },
             events: {
               load: function(){
                 refreshChartInfo();
@@ -116,6 +129,7 @@ function init(){
               }
             }
           },
+          colors: colors,
           title: {
             text: ''
           },
