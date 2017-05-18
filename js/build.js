@@ -104,7 +104,7 @@ function init(){
           '#293954', '#2E6F82', '#3D7A3D', '#B07623', '#963732'
         ];
         colors.forEach(function eachColor (color, index) {
-          if (!Fliplet.Themes.Current) {
+          if (!Fliplet.Themes) {
             return;
           }
           colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
