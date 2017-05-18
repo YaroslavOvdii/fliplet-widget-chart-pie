@@ -117,7 +117,7 @@ function init(){
             plotShadow: false,
             renderTo: $container.find('.chart-pie-container')[0],
             style: {
-              fontFamily: Fliplet.Themes.Current.get('bodyFontFamily') || 'sans-serif'
+              fontFamily: (Fliplet.Themes && Fliplet.Themes.Current.get('bodyFontFamily')) || 'sans-serif'
             },
             events: {
               load: function(){
