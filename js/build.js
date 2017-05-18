@@ -146,7 +146,7 @@ function init(){
                 enabled: data.showDataValues,
                 format: [
                   (!data.showDataLegend ? '<strong>{point.name}</strong>: ' : ''),
-                  '{point.percentage:.1f} %'
+                  '{point.y}'
                 ].join(''),
                 style: {
                   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
