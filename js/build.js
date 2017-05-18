@@ -7,7 +7,6 @@ function init(){
       var data = Fliplet.Widget.getData( chartId );
       var $container = $(el);
       var refreshTimeout = 5000;
-      // var updateDateFormat = 'MMMM Do YYYY, h:mm:ss a';
       var updateDateFormat = 'hh:mm:ss a';
 
       function resetData() {
