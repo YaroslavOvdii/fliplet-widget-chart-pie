@@ -163,8 +163,10 @@ function init(){
             colorByPoint: true,
             innerSize: '0%',
             data: data.entries
-            // color: '#3276b1',
-          }]
+          }],
+          credits: {
+            enabled: false
+          }
         };
         // Create and save chart object
         ui.flipletCharts[chartId] = new Highcharts.Chart(chartOpt);
