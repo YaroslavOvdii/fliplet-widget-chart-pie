@@ -41,7 +41,7 @@ var dsQueryData = {
     ]
   },
   result: data.dataSourceQuery
-}
+};
 
 var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   selector: '.data-source-query',
