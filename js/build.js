@@ -138,7 +138,7 @@ Fliplet().then(function(){
           text: ''
         },
         tooltip: {
-          pointFormat: '<strong>{point.percentage:.1f}%</strong> '
+          pointFormat: '{series.name}: <strong>{point.percentage:.1f}%</strong> '
         },
         plotOptions: {
           pie: {
