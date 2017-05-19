@@ -158,9 +158,7 @@ Fliplet().then(function(){
           }
         },
         series: [{
-          name: (data.dataSourceQuery.selectedModeIdx === 0)
-            ? data.dataSourceQuery.columns.category
-            : data.dataSourceQuery.columns.column,
+          name: data.name,
           colorByPoint: true,
           innerSize: '0%',
           data: data.entries
