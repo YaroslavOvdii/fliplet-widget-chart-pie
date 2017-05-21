@@ -6,7 +6,7 @@
   "tags": ["type:component", "category:charts"],
   "provider_only": false,
   "references": [
-    "dataSourceId:dataSource"
+    "dataSourceQuery.dataSourceId:dataSource"
   ],
   "html_tag": "div",
   "interface": {
