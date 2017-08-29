@@ -36,6 +36,7 @@
           switch (data.dataSourceQuery.selectedModeIdx) {
             case 0:
             default:
+              // Plot the data as is
               data.name = data.dataSourceQuery.columns.category;
               result.dataSourceEntries.forEach(function(row, i) {
                 data.entries.push({
@@ -45,14 +46,19 @@
               });
               break;
             case 1:
+              // Summarise data
               data.name = 'Count of ' + data.dataSourceQuery.columns.column;
               result.dataSourceEntries.forEach(function(row) {
                 var value = row[data.dataSourceQuery.columns.column];
-                value = $.trim(value);
+
+                if (typeof value === 'string') {
+                  value = $.trim(value);
+                }
 
                 if (value.constructor.name !== 'Array') {
                   value = [value];
                 }
+                
                 // Value is an array
                 value.forEach(function(elem) {
                   if ( columns.indexOf(elem) === -1 ) {
