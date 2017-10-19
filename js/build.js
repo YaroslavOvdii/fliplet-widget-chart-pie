@@ -55,7 +55,7 @@
                   value = $.trim(value);
                 }
 
-                if (value.constructor.name !== 'Array') {
+                if (!Array.isArray(value)) {
                   value = [value];
                 }
                 
