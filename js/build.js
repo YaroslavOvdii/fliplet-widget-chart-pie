@@ -176,6 +176,11 @@
               showInLegend: data.showDataLegend
             }
           },
+          legend: {
+            itemStyle: {
+              width: '100%'
+            }
+          },
           series: [{
             name: data.name,
             colorByPoint: true,
