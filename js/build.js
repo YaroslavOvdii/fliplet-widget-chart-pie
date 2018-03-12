@@ -92,9 +92,10 @@
             }, 0);
 
             return Promise.resolve();
-        }).catch(function(error){
-          return Promise.reject(error);
-        });
+          }).catch(function(error){
+            return Promise.reject(error);
+          });
+        })
       }
 
       function refreshChartInfo() {
@@ -195,14 +196,14 @@
                 Fliplet.Analytics.trackEvent({
                   category: 'chart',
                   action: 'data_point_interact',
-                  title: 'pie'
+                  label: 'pie'
                 });
               },
               legendItemClick: function () {
                 Fliplet.Analytics.trackEvent({
                   category: 'chart',
                   action: 'legend_filter',
-                  title: 'pie'
+                  label: 'pie'
                 });
               }
             }
