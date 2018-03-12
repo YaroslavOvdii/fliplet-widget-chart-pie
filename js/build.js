@@ -189,7 +189,23 @@
             name: data.name,
             colorByPoint: true,
             innerSize: '0%',
-            data: data.entries
+            data: data.entries,
+            events: {
+              click: function () {
+                Fliplet.Analytics.trackEvent({
+                  category: 'chart',
+                  action: 'data_point_interact',
+                  title: 'pie'
+                });
+              },
+              legendItemClick: function () {
+                Fliplet.Analytics.trackEvent({
+                  category: 'chart',
+                  action: 'legend_filter',
+                  title: 'pie'
+                });
+              }
+            }
           }],
           credits: {
             enabled: false
