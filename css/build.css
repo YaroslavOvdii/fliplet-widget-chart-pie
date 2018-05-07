@@ -1,6 +1,12 @@
 .chart-pie-wrapper .chart-placeholder {
   position: relative;
 }
+
+.chart-bar-wrapper .chart-placeholder .chart-placeholder-text > * {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
 .chart-pie-wrapper .chart-placeholder .chart-container {
   opacity: 0.3;
   pointer-events: none;
@@ -15,9 +21,14 @@
   transform: translate3d(0, -50%, 0);
 }
 .chart-pie-wrapper .chart-container {
-  min-width: 310px;
-  height: 400px;
+  min-height: 100px;
   margin: 0 auto;
+  height: 400px;
+}
+@media screen and (min-width: 640px) {
+  .chart-pie-wrapper .chart-container {
+    height: 500px;
+  }
 }
 .chart-pie-wrapper .chart-updatedAt,
 .chart-pie-wrapper .chart-total {
