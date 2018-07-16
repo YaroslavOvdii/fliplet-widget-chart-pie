@@ -161,6 +161,11 @@
           subtitle: {
             text: ''
           },
+          navigation: {
+            buttonOptions: {
+              enabled: false
+            }
+          },
           tooltip: {
             pointFormat: '{series.name}: <strong>{point.percentage:.1f}%</strong> '
           },
