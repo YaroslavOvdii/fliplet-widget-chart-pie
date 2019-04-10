@@ -5,7 +5,7 @@
   function init() {
     $('[data-chart-pie-id]').each(function (i, el) {
       var chartId = $(this).data('chart-pie-id');
-      var data = Fliplet.Widget.getData( chartId );
+      var data = Fliplet.Widget.getData(chartId);
       var $container = $(el);
       var refreshTimeout = 5000;
       var updateDateFormat = 'hh:mm:ss a';
@@ -17,7 +17,7 @@
       }
 
       function refreshData() {
-        if (!data.dataSourceQuery) {
+        if (typeof data.dataSourceQuery !== 'object') {
           data.entries = [
             {name: 'A', y: 3, sliced: true, selected: true},
             {name: 'B', y: 2},
@@ -26,71 +26,76 @@
           data.totalEntries = 6;
           return Promise.resolve()
         }
-        return Fliplet.DataSources.fetchWithOptions(data.dataSourceQuery).then(function(result){
-          var columns = [];
-          data.entries = [];
-          data.totalEntries = 0;
-          if (!result.dataSource.columns.length) {
-            return Promise.resolve();
-          }
-          switch (data.dataSourceQuery.selectedModeIdx) {
-            case 0:
-            default:
-              // Plot the data as is
-              data.name = data.dataSourceQuery.columns.category;
-              result.dataSourceEntries.forEach(function(row, i) {
-                data.entries.push({
-                  name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i+1),
-                  y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
+
+        return Fliplet.Hooks.run('beforeQueryChart', data.dataSourceQuery).then(function() {
+          return Fliplet.DataSources.fetchWithOptions(data.dataSourceQuery)
+        }).then(function(result){
+          return Fliplet.Hooks.run('afterQueryChart', result).then(function() {
+            var columns = [];
+            data.entries = [];
+            data.totalEntries = 0;
+            if (!result.dataSource.columns.length) {
+              return Promise.resolve();
+            }
+            switch (data.dataSourceQuery.selectedModeIdx) {
+              case 0:
+              default:
+                // Plot the data as is
+                data.name = data.dataSourceQuery.columns.category;
+                result.dataSourceEntries.forEach(function(row, i) {
+                  data.entries.push({
+                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i+1),
+                    y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
+                  });
                 });
-              });
-              break;
-            case 1:
-              // Summarise data
-              data.name = 'Count of ' + data.dataSourceQuery.columns.column;
-              result.dataSourceEntries.forEach(function(row) {
-                var value = row[data.dataSourceQuery.columns.column];
+                break;
+              case 1:
+                // Summarise data
+                data.name = 'Count of ' + data.dataSourceQuery.columns.column;
+                result.dataSourceEntries.forEach(function(row) {
+                  var value = row[data.dataSourceQuery.columns.column];
 
-                if (typeof value === 'string') {
-                  value = $.trim(value);
-                }
-
-                if (!Array.isArray(value)) {
-                  value = [value];
-                }
-                
-                // Value is an array
-                value.forEach(function(elem) {
-                  if ( columns.indexOf(elem) === -1 ) {
-                    columns.push(elem);
-                    data.entries[columns.indexOf(elem)] = {
-                      name: elem,
-                      y: 1
-                    };
-                  } else {
-                    data.entries[columns.indexOf(elem)].y++;
+                  if (typeof value === 'string') {
+                    value = $.trim(value);
                   }
+
+                  if (!Array.isArray(value)) {
+                    value = [value];
+                  }
+
+                  // Value is an array
+                  value.forEach(function(elem) {
+                    if ( columns.indexOf(elem) === -1 ) {
+                      columns.push(elem);
+                      data.entries[columns.indexOf(elem)] = {
+                        name: elem,
+                        y: 1
+                      };
+                    } else {
+                      data.entries[columns.indexOf(elem)].y++;
+                    }
+                  });
                 });
-              });
-              break;
-          }
-          data.entries = _.reverse(_.sortBy(data.entries, function(o){
-            return o.y;
-          }));
-          if (data.entries.length) {
-            data.entries[0].sliced = true;
-            data.entries[0].selected = true;
-          }
+                break;
+            }
+            data.entries = _.reverse(_.sortBy(data.entries, function(o){
+              return o.y;
+            }));
+            if (data.entries.length) {
+              data.entries[0].sliced = true;
+              data.entries[0].selected = true;
+            }
 
-          // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
-          data.totalEntries = _.reduce(data.entries, function(sum, o){
-            return sum + o.y;
-          }, 0);
+            // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
+            data.totalEntries = _.reduce(data.entries, function(sum, o){
+              return sum + o.y;
+            }, 0);
 
-          return Promise.resolve();
-        }).catch(function(error){
-          return Promise.reject(error);
-        });
+            return Promise.resolve();
+          }).catch(function(error){
+            return Promise.reject(error);
+          });
+        })
       }
 
       function refreshChartInfo() {
@@ -156,6 +161,11 @@
           subtitle: {
             text: ''
           },
+          navigation: {
+            buttonOptions: {
+              enabled: false
+            }
+          },
           tooltip: {
             pointFormat: '{series.name}: <strong>{point.percentage:.1f}%</strong> '
           },
@@ -176,11 +186,32 @@
               showInLegend: data.showDataLegend
             }
           },
+          legend: {
+            itemStyle: {
+              width: '100%'
+            }
+          },
           series: [{
             name: data.name,
             colorByPoint: true,
             innerSize: '0%',
-            data: data.entries
+            data: data.entries,
+            events: {
+              click: function () {
+                Fliplet.Analytics.trackEvent({
+                  category: 'chart',
+                  action: 'data_point_interact',
+                  label: 'pie'
+                });
+              },
+              legendItemClick: function () {
+                Fliplet.Analytics.trackEvent({
+                  category: 'chart',
+                  action: 'legend_filter',
+                  label: 'pie'
+                });
+              }
+            }
           }],
           credits: {
             enabled: false
@@ -190,6 +221,14 @@
         ui.flipletCharts[chartId] = new Highcharts.Chart(chartOpt);
       }
 
+      if (Fliplet.Env.get('interact')) {
+        // TinyMCE removes <style> tags, so we've used a <script> tag instead,
+        // which will be appended to <body> to apply the styles
+        $($(this).find('.chart-styles').detach().html()).appendTo('body');
+      } else {
+        $(this).find('.chart-styles').remove();
+      }
+
       refreshData().then(drawChart).catch(function(error){
         console.error(error);
       });
@@ -197,7 +236,7 @@
   }
 
   Fliplet().then(function(){
-    var debounceLoad = _.debounce(init, 500);
+    var debounceLoad = _.debounce(init, 500, { leading: true });
     Fliplet.Studio.onEvent(function (event) {
       if (event.detail.event === 'reload-widget-instance') {
         debounceLoad();
