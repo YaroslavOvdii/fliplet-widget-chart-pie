@@ -1,12 +1,11 @@
-(function(){
+(function () {
   window.ui = window.ui || {}
   ui.flipletCharts = ui.flipletCharts || {};
 
   function init() {
-    $('[data-chart-pie-id]').each(function (i, el) {
-      var chartId = $(this).data('chart-pie-id');
-      var data = Fliplet.Widget.getData(chartId);
-      var $container = $(el);
+    Fliplet.Widget.instance('chart-pie', function (data) {
+      var chartId = data.id;
+      var $container = $(this);
       var refreshTimeout = 5000;
       var updateDateFormat = 'hh:mm:ss a';
 
@@ -18,19 +17,29 @@
 
       function refreshData() {
         if (typeof data.dataSourceQuery !== 'object') {
-          data.entries = [
-            {name: 'A', y: 3, sliced: true, selected: true},
-            {name: 'B', y: 2},
-            {name: 'C', y: 1}
+          data.entries = [{
+              name: 'A',
+              y: 3,
+              sliced: true,
+              selected: true
+            },
+            {
+              name: 'B',
+              y: 2
+            },
+            {
+              name: 'C',
+              y: 1
+            }
           ];
           data.totalEntries = 6;
           return Promise.resolve()
         }
 
-        return Fliplet.Hooks.run('beforeQueryChart', data.dataSourceQuery).then(function() {
+        return Fliplet.Hooks.run('beforeQueryChart', data.dataSourceQuery).then(function () {
           return Fliplet.DataSources.fetchWithOptions(data.dataSourceQuery)
-        }).then(function(result){
-          return Fliplet.Hooks.run('afterQueryChart', result).then(function() {
+        }).then(function (result) {
+          return Fliplet.Hooks.run('afterQueryChart', result).then(function () {
             var columns = [];
             data.entries = [];
             data.totalEntries = 0;
@@ -42,9 +51,9 @@
               default:
                 // Plot the data as is
                 data.name = data.dataSourceQuery.columns.category;
-                result.dataSourceEntries.forEach(function(row, i) {
+                result.dataSourceEntries.forEach(function (row, i) {
                   data.entries.push({
-                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i+1),
+                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i + 1),
                     y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
                   });
                 });
@@ -52,7 +61,7 @@
               case 1:
                 // Summarise data
                 data.name = 'Count of ' + data.dataSourceQuery.columns.column;
-                result.dataSourceEntries.forEach(function(row) {
+                result.dataSourceEntries.forEach(function (row) {
                   var value = row[data.dataSourceQuery.columns.column];
 
                   if (typeof value === 'string') {
@@ -68,8 +77,8 @@
                   }
 
                   // Value is an array
-                  value.forEach(function(elem) {
-                    if ( columns.indexOf(elem) === -1 ) {
+                  value.forEach(function (elem) {
+                    if (columns.indexOf(elem) === -1) {
                       columns.push(elem);
                       data.entries[columns.indexOf(elem)] = {
                         name: elem,
@@ -82,7 +91,7 @@
                 });
                 break;
             }
-            data.entries = _.reverse(_.sortBy(data.entries, function(o){
+            data.entries = _.reverse(_.sortBy(data.entries, function (o) {
               return o.y;
             }));
             if (data.entries.length) {
@@ -91,12 +100,12 @@
             }
 
             // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
-            data.totalEntries = _.reduce(data.entries, function(sum, o){
+            data.totalEntries = _.reduce(data.entries, function (sum, o) {
               return sum + o.y;
             }, 0);
 
             return Promise.resolve();
-          }).catch(function(error){
+          }).catch(function (error) {
             return Promise.reject(error);
           });
         })
@@ -118,8 +127,8 @@
       }
 
       function getLatestData() {
-        setTimeout(function(){
-          refreshData().then(function(){
+        setTimeout(function () {
+          refreshData().then(function () {
             refreshChart();
             if (data.autoRefresh) {
               getLatestData();
@@ -133,11 +142,11 @@
           '#00abd1', '#ed9119', '#7D4B79', '#F05865', '#36344C',
           '#474975', '#8D8EA6', '#FF5722', '#009688', '#E91E63'
         ];
-        colors.forEach(function eachColor (color, index) {
+        colors.forEach(function eachColor(color, index) {
           if (!Fliplet.Themes) {
             return;
           }
-          colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
+          colors[index] = Fliplet.Themes.Current.get('chartColor' + (index + 1)) || color;
         });
         var chartOpt = {
           chart: {
@@ -150,7 +159,7 @@
               fontFamily: (Fliplet.Themes && Fliplet.Themes.Current.get('bodyFontFamily')) || 'sans-serif'
             },
             events: {
-              load: function(){
+              load: function () {
                 refreshChartInfo();
                 if (data.autoRefresh) {
                   getLatestData();
@@ -237,14 +246,16 @@
         ui.flipletCharts[chartId].reflow();
       });
 
-      refreshData().then(drawChart).catch(function(error){
+      refreshData().then(drawChart).catch(function (error) {
         console.error(error);
       });
     });
   }
 
-  Fliplet().then(function(){
-    var debounceLoad = _.debounce(init, 500, { leading: true });
+  Fliplet().then(function () {
+    var debounceLoad = _.debounce(init, 500, {
+      leading: true
+    });
     Fliplet.Studio.onEvent(function (event) {
       if (event.detail.event === 'reload-widget-instance') {
         debounceLoad();
