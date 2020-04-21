@@ -1,9 +1,9 @@
-(function(){
-  window.ui = window.ui || {}
+(function() {
+  window.ui = window.ui || {};
   ui.flipletCharts = ui.flipletCharts || {};
 
   function init() {
-    Fliplet.Widget.instance('chart-pie', function (data) {
+    Fliplet.Widget.instance('chart-pie', function(data) {
       var chartId = data.id;
       var $container = $(this);
       var refreshTimeout = 5000;
@@ -23,7 +23,7 @@
             {name: 'C', y: 1}
           ];
           data.totalEntries = 6;
-          return Promise.resolve()
+          return Promise.resolve();
         }
 
         // beforeQueryChart is deprecated
@@ -46,9 +46,9 @@
           }
 
           return Fliplet.DataSources.fetchWithOptions(data.dataSourceQuery);
-        }).then(function(result){
+        }).then(function(result) {
           // afterQueryChart is deprecated
-          return Fliplet.Hooks.run('afterQueryChart', result).then(function () {
+          return Fliplet.Hooks.run('afterQueryChart', result).then(function() {
             return Fliplet.Hooks.run('afterChartQuery', {
               config: data,
               id: data.id,
@@ -56,7 +56,7 @@
               type: 'pie',
               records: result
             });
-          }).then(function () {
+          }).then(function() {
             var columns = [];
             data.entries = [];
             data.totalEntries = 0;
@@ -70,7 +70,7 @@
                 data.name = data.dataSourceQuery.columns.category;
                 result.dataSourceEntries.forEach(function(row, i) {
                   data.entries.push({
-                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i+1),
+                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i + 1),
                     y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
                   });
                 });
@@ -108,7 +108,7 @@
                 });
                 break;
             }
-            data.entries = _.reverse(_.sortBy(data.entries, function(o){
+            data.entries = _.reverse(_.sortBy(data.entries, function(o) {
               return o.y;
             }));
             if (data.entries.length) {
@@ -117,15 +117,15 @@
             }
 
             // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
-            data.totalEntries = _.reduce(data.entries, function(sum, o){
+            data.totalEntries = _.reduce(data.entries, function(sum, o) {
               return sum + o.y;
             }, 0);
 
             return Promise.resolve();
-          }).catch(function(error){
+          }).catch(function(error) {
             return Promise.reject(error);
           });
-        })
+        });
       }
 
       function refreshChartInfo() {
@@ -150,16 +150,16 @@
       }
 
       function getLatestData() {
-        return new Promise(function (resolve, reject) {
-          setTimeout(function () {
-            refreshData().then(function () {
+        return new Promise(function(resolve, reject) {
+          setTimeout(function() {
+            refreshData().then(function() {
               if (data.autoRefresh) {
                 getLatestData();
               }
 
               refreshChart();
               resolve();
-            }).catch(function (err) {
+            }).catch(function(err) {
               if (data.autoRefresh) {
                 getLatestData();
               }
@@ -171,16 +171,16 @@
       }
 
       function drawChart() {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           var colors = [
             '#00abd1', '#ed9119', '#7D4B79', '#F05865', '#36344C',
             '#474975', '#8D8EA6', '#FF5722', '#009688', '#E91E63'
           ];
-          colors.forEach(function eachColor (color, index) {
+          colors.forEach(function eachColor(color, index) {
             if (!Fliplet.Themes) {
               return;
             }
-            colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
+            colors[index] = Fliplet.Themes.Current.get('chartColor' + (index + 1)) || color;
           });
           var chartOpt = {
             chart: {
@@ -193,13 +193,13 @@
                 fontFamily: (Fliplet.Themes && Fliplet.Themes.Current.get('bodyFontFamily')) || 'sans-serif'
               },
               events: {
-                load: function(){
+                load: function() {
                   refreshChartInfo();
                   if (data.autoRefresh) {
                     getLatestData();
                   }
                 },
-                render: function () {
+                render: function() {
                   ui.flipletCharts[chartId] = this;
                   Fliplet.Hooks.run('afterChartRender', {
                     chart: ui.flipletCharts[chartId],
@@ -256,14 +256,14 @@
               innerSize: '0%',
               data: data.entries,
               events: {
-                click: function () {
+                click: function() {
                   Fliplet.Analytics.trackEvent({
                     category: 'chart',
                     action: 'data_point_interact',
                     label: 'pie'
                   });
                 },
-                legendItemClick: function () {
+                legendItemClick: function() {
                   Fliplet.Analytics.trackEvent({
                     category: 'chart',
                     action: 'legend_filter',
@@ -283,7 +283,7 @@
             uuid: data.uuid,
             type: 'pie',
             config: data
-          }).then(function () {
+          }).then(function() {
             try {
               new Highcharts.Chart(chartOpt);
             } catch (e) {
@@ -308,16 +308,16 @@
       Fliplet.Hooks.on('appearanceChanged', redrawChart);
       Fliplet.Hooks.on('appearanceFileChanged', redrawChart);
 
-      refreshData().then(drawChart).catch(function(error){
+      refreshData().then(drawChart).catch(function(error) {
         console.error(error);
         getLatestData();
       });
     });
   }
 
-  Fliplet().then(function(){
+  Fliplet().then(function() {
     var debounceLoad = _.debounce(init, 500, { leading: true });
-    Fliplet.Studio.onEvent(function (event) {
+    Fliplet.Studio.onEvent(function(event) {
       if (event.detail.event === 'reload-widget-instance') {
         debounceLoad();
       }
