@@ -5,6 +5,7 @@
   function init() {
     Fliplet.Widget.instance('chart-pie', function (data) {
       var chartId = data.id;
+      var chartUuid = data.uuid;
       var $container = $(this);
       var refreshTimeout = 5000;
       var updateDateFormat = 'hh:mm:ss a';
@@ -133,6 +134,25 @@
         })
       }
 
+      /**
+       * A function that searches for a personal style of the widget
+       *
+       * @returns {object/null} returns a color object or false if there is no personal color used for this widget
+       */
+      function getPersonalColors() {
+        var widgetData = window.__widgetData;
+        var widgetDataKeys = Object.keys(widgetData);
+        var themeKey = widgetDataKeys.find(function(key) {
+          return widgetData[key] && widgetData[key].data && widgetData[key].data.values;
+        });
+        var widgetInstances = themeKey ? widgetData[themeKey].data.widgetInstances : [];
+        var chartInstance = widgetInstances.find(function(instance) {
+          return instance.uuid === chartUuid;
+        });
+
+        return chartInstance ? chartInstance.values : null;
+      }
+
       function refreshChartInfo() {
         // Update total count
         $container.find('.total').html(data.totalEntries);
@@ -193,12 +213,22 @@
       });
 
       function drawChart() {
-        return new Promise(function (resolve, reject) {
-          colors.forEach(function eachColor (color, index) {
+        return new Promise(function(resolve, reject) {
+          var personalColors = getPersonalColors();
+
+          colors.forEach(function eachColor(color, index) {
             if (!Fliplet.Themes) {
               return;
             }
-            colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
+
+            var colorKey = 'chartColor' + (index + 1);
+            var newColor = personalColors
+              ? personalColors[colorKey]
+              : Fliplet.Themes.Current.get(colorKey);
+            
+            if (newColor) {
+              colors[index] = newColor;
+            }
           });
           var chartOpt = {
             chart: {
