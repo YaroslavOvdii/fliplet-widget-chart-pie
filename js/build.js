@@ -135,11 +135,11 @@
       }
 
       /**
-       * A function that searches for a personal style of the widget
+       * A function that searches for a custom style of the widget
        *
-       * @returns {object/null} returns a color object or false if there is no personal color used for this widget
+       * @returns {object/null} returns a color object or false if there is no custom color used for this widget
        */
-      function getPersonalColors() {
+      function getCustomColors() {
         var widgetData = window.__widgetData;
         var widgetDataKeys = Object.keys(widgetData);
         var themeKey = widgetDataKeys.find(function(key) {
@@ -213,8 +213,8 @@
       });
 
       function drawChart() {
-        return new Promise(function(resolve, reject) {
-          var personalColors = getPersonalColors();
+        return new Promise(function (resolve, reject) {
+          var customColors = getCustomColors();
 
           colors.forEach(function eachColor(color, index) {
             if (!Fliplet.Themes) {
@@ -222,8 +222,8 @@
             }
 
             var colorKey = 'chartColor' + (index + 1);
-            var newColor = personalColors
-              ? personalColors[colorKey]
+            var newColor = customColors
+              ? customColors[colorKey]
               : Fliplet.Themes.Current.get(colorKey);
             
             if (newColor) {
