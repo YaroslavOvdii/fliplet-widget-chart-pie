@@ -5,6 +5,7 @@
   function init() {
     Fliplet.Widget.instance('chart-pie', function (data) {
       var chartId = data.id;
+      var chartUuid = data.uuid;
       var $container = $(this);
       var refreshTimeout = 5000;
       var updateDateFormat = 'hh:mm:ss a';
@@ -193,12 +194,22 @@
       });
 
       function drawChart() {
-        return new Promise(function (resolve, reject) {
-          colors.forEach(function eachColor (color, index) {
+        return new Promise(function(resolve, reject) {
+          var customColors = Fliplet.Themes.Current.getSettingsForWidgetInstance(chartUuid);
+
+          colors.forEach(function eachColor(color, index) {
             if (!Fliplet.Themes) {
               return;
             }
-            colors[index] = Fliplet.Themes.Current.get('chartColor'+(index+1)) || color;
+
+            var colorKey = 'chartColor' + (index + 1);
+            var newColor = customColors
+              ? customColors[colorKey]
+              : Fliplet.Themes.Current.get(colorKey);
+            
+            if (newColor) {
+              colors[index] = newColor;
+            }
           });
           var chartOpt = {
             chart: {
