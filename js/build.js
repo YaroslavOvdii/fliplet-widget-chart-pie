@@ -134,21 +134,6 @@
         })
       }
 
-      /**
-       * A function that searches for a custom style of the widget
-       *
-       * @returns {object/null} returns a color object or null if there is no custom color used for this widget
-       */
-      function getCustomColors() {
-        var widgetData = Fliplet.Themes.Current.getInstance();
-        var widgetInstances = widgetData ? widgetData.data.widgetInstances : [];
-        var chartInstance = widgetInstances.find(function(instance) {
-          return instance.uuid === chartUuid;
-        });
-
-        return chartInstance ? chartInstance.values : null;
-      }
-
       function refreshChartInfo() {
         // Update total count
         $container.find('.total').html(data.totalEntries);
@@ -210,7 +195,7 @@
 
       function drawChart() {
         return new Promise(function(resolve, reject) {
-          var customColors = getCustomColors();
+          var customColors = Fliplet.Themes.Current.getSettingsForWidgetInstance(chartUuid);
 
           colors.forEach(function eachColor(color, index) {
             if (!Fliplet.Themes) {
