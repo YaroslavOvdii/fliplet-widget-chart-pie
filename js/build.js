@@ -204,7 +204,7 @@
 
             var colorKey = 'chartColor' + (index + 1);
             var newColor = customColors
-              ? customColors[colorKey]
+              ? customColors.values[colorKey]
               : Fliplet.Themes.Current.get(colorKey);
             
             if (newColor) {
